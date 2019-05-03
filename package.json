@@ -1,5 +1,7 @@
 {
-  "name": "tictactoe",
+  "name": "tictactoe-deathmatch",
+  "author":"Luka Mohar",
+  "homepage": "http://luka.isms.si/tictactoe/",
   "version": "0.1.0",
   "private": true,
   "dependencies": {

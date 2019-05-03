@@ -1,17 +1,17 @@
 import React, { useContext } from 'react';
-import {AppContext} from '../App.js'
+import {AppContext, CHOOSE_PLAYER} from '../App.js'
 
 const Select = () => {
     // eslint-disable-next-line
     const { dispatch } = useContext(AppContext);
     const handleClick = (e) => {
-        dispatch({type: 'choosePlayer', payload: e.target.id})
-        
+        // change to CHOOSE_PLAYER
+        dispatch({type: CHOOSE_PLAYER, payload: e.target.id});   
     };
     return (
         <div className="container">
-        <h1>CHOOSE YOUR WARRIOR</h1>
-        <button id="x" onClick={handleClick}><h1>X</h1></button> or <button id="o" onClick={handleClick}><h1>O</h1></button>
+        <h1>CHOOSE YOUR <span className="red">WARRIOR</span></h1>
+        <button id="x" onClick={handleClick}>X</button> or <button id="o" onClick={handleClick}>O</button>
         </div>
     );
 }

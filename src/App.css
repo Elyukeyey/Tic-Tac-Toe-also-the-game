@@ -6,12 +6,13 @@
   text-align: center
 }
 .game-field {
-  margin: auto;
+  margin: 0 auto;
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
-  grid-gap: 2px;
-  background-color: black;
-  width: 300px;
+  grid-gap: 0px;
+  /*background-color: black;*/
+  width: 290px;
+  height: 290px;
 }
 .field {
   background-color: white;
@@ -27,11 +28,14 @@
   pointer-events: none;
 }
 .win {
-  background-color: palegreen !important;
+  background-color: crimson !important;
+}
+.lose {
+  background-color: maroon !important;
 }
 .console {
   position: absolute;
-  bottom: 0;
+  bottom: 5px;
   left: 50%;
   transform: translatex(-50%);
   padding: 2px;
@@ -39,9 +43,83 @@
   font-family: monospace;
   color: #000;
   width: 300px;
-  height: 70px;
+  height: 100px;
   margin: auto;
   text-align: left;
   overflow: auto;
   line-break: auto;
+}
+.console-log {
+  margin: 0px;
+  padding: 0px;
+  line-height: 15px;
+}
+.red {
+  color: crimson;
+}
+.green {
+  color: darkgreen;
+}
+button {
+  width: 40%;
+  border-radius: 5px;
+  background-color: transparent;
+  border: 2px #000 solid;
+  padding: 10px;
+  margin: 2px;
+  margin-top: 50px;
+  font-weight: 700;
+}
+.reset {
+  margin-top: 30px !important;
+  text-align: right;
+}
+.reset a {
+  text-decoration: none;
+  color: crimson;
+  font-weight: bold;
+}
+.reset a:hover {
+  color: maroon;
+}
+/*
+1 | 2 | 3
+_   _   _
+4 | 5 | 6
+_   _   _
+7 | 8 | 9
+
+*/
+
+.field-1 {
+  border-right: 2px #000 solid;
+  border-bottom: 2px #000 solid;
+}
+.field-2 {
+  border-right: 2px #000 solid;
+  border-bottom: 2px #000 solid;
+}
+.field-3 {
+  border-bottom: 2px #000 solid;
+}
+.field-4 {
+  border-right: 2px #000 solid;
+  border-bottom: 2px #000 solid;
+}
+.field-5 {
+  border-right: 2px #000 solid;
+  border-bottom: 2px #000 solid;
+}
+.field-6 {
+  border-bottom: 2px #000 solid;
+}
+.field-7 {
+  border-right: 2px #000 solid;
+}
+.field-8 {
+  border-right: 2px #000 solid;
+}
+.title {
+  margin: auto 10px;
+  text-align: center
 }

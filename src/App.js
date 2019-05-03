@@ -4,9 +4,17 @@ import Gameboard from './components/Gameboard';
 import Select from './components/Select';
 import Console from './components/Console';
 
-import {startPosition, playerPositions} from './logic';
+// reducer action types
+export const CONSOLE_LOG = 'CONSOLE_LOG';
+export const CHOOSE_PLAYER = 'CHOOSE_PLAYER';
+export const CHANGE_TURN = 'CHANGE_TURN';
+export const UPDATE_POSITIONS = 'UPDATE_POSITIONS';
+export const UPDATE_FIELDS = 'UPDATE_FIELDS';
+export const NEW_GAME = 'NEW_GAME';
+export const RESET = 'RESET';
+export const UPDATE_STATS = 'UPDATE_STATS';
 
-
+// initState
 const initialState = {
   fields: [    
     {id: 1, taken: ''},
@@ -21,14 +29,21 @@ const initialState = {
   ],
   turn: true,
   player: '',
+  computer: '',
   playerPositions: {
     x: [],
     o: []
   },
   stats: {
-    x: 0,
-    o: 0
+    player: 0,
+    comp: 0
   },
+  consoleLogs: [
+    {
+      text: 'Let the **tic tac toe deathmatch** begin...',
+      color: 'red'
+    },
+  ]
 }
 
 
@@ -36,32 +51,33 @@ export const AppContext = createContext(null);
 
 const reducer = (state,action) => {
   switch(action.type) {
-    case 'choosePlayer':
+    case CHOOSE_PLAYER:
       return { 
         ...state,
-        'player': action.payload 
+        'player': action.payload,
+        'computer': (action.payload === 'x') ? 'o' : 'x'
       }
-    case 'makeMove': 
+    /*case 'makeMove': 
       return {
         ...state,
         currentGame: action.payload
-      };
-    case 'changeTurn':
+      };*/
+    case CHANGE_TURN:
       return {
         ...state,
         turn: !state.turn
       };
-    case 'updatePositions': 
+    case UPDATE_POSITIONS: 
       return {
         ...state,
         playerPositions: action.payload,
       };
-    case 'updateFields':
+    case UPDATE_FIELDS:
       return {
         ...state,
         fields: action.payload
     };
-    case 'newGame': 
+    case NEW_GAME: 
       return {
         ...state,
         fields: [    
@@ -75,12 +91,17 @@ const reducer = (state,action) => {
           {id: 8, taken: ''},
           {id: 9, taken: ''}
         ],
+        turn: true,
         playerPositions: {
           x: [],
           o: []
         },
-        stats: action.payload
       }
+    case UPDATE_STATS:
+      return {
+        ...state,
+        stats: action.payload
+      };
     case 'reset': 
       return {
         fields: [    
@@ -96,15 +117,27 @@ const reducer = (state,action) => {
         ],
         turn: true,
         player: '',
+        computer: '',
         playerPositions: {
           x: [],
           o: []
         },
         stats: {
-          x: 0,
-          o: 0
+          player: 0,
+          comp: 0
         },
+        consoleLogs: [
+          {
+            text: 'Let the **tic tac toe deathmatch** begin...',
+            color: 'red'
+          },
+        ]
       }
+    case CONSOLE_LOG: 
+      return {
+        ...state,
+        consoleLogs: [action.payload, ...state.consoleLogs]
+      };
     default:
       throw new Error();
   }
@@ -121,7 +154,7 @@ function App() {
     <AppContext.Provider value={{state,dispatch}}>
     
       {(!state.player) && <Select />}
-      {(state.player) && <><Gameboard /></>}
+      {(state.player) && <><Gameboard /><Console /></>}
     
     </AppContext.Provider>
     </>

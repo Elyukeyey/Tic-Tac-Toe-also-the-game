@@ -1,14 +1,17 @@
-import React, {useContext} from 'react'
+import React, {useState, useEffect, useContext} from 'react'
 import { AppContext } from '../App';
 
 const Console = () => {
-    const {state} = useContext(AppContext);
+    const {state } = useContext(AppContext);
+    const [log,setLog] = useState(state.consoleLogs);
 
-    const {x, o} = state.playerPositions;
-    return (
+    useEffect(()=>{
+      setLog(state.consoleLogs);
+    },[state]);
+    
+      return (
         <div className="console">
-            <div key={x}>x positions: {(x) ? x.map(e=><span key={e}>{e} ,</span>) : null }</div>
-            <div key={o}>o positions: {(o) ? o.map(e=><span key={e}>{e} ,</span>) : null }</div>    
+            { log.map(({text, color}, i) => <p key={i} className={`console-log ${color}`}>{text}</p>)}
         </div>
   );
 }
