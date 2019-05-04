@@ -35,14 +35,6 @@ export const gameOver = (winCombinations, players) => {
         win: [],
         reset: false
     };
-    
-    if((players.x.length + players.o.length) === 9) {
-        //console.log('inside');                                                                        CL
-        return {
-            ...results,
-            reset: true                     
-        }
-    }
     for (let prop in players) {
         winCombinations.map(e => {
             if (players[prop].filter(x => e.includes(x)).length === 3) {
@@ -54,7 +46,15 @@ export const gameOver = (winCombinations, players) => {
             return false;
         });
     }
-    //console.log('outside: ' + results);                                                                 CL
+    
+    if((players.x.length + players.o.length) === 9) {
+        //console.log('inside');                                                                        CL
+        return {
+            ...results,
+            reset: true                     
+        }
+    }
+    //console.log('outside: ' + results);
     return results
 }
 
@@ -136,17 +136,20 @@ export function playerAI(opponent,turn,moveNumber,takenFields,winCombinations) {
                             logicalMove = [...possibleMoves.filter(x=>x.length===2)];
                             //console.log('logical Move before flat');                                      CL
                             //console.log(logicalMove);                                                     CL
+                            console.log(logicalMove);
                             logicalMove = logicalMove
-                                .flat()
+                                //.flat() - not supported by EDGE and IE
+                                .concat.apply([],[...logicalMove])
                                 .filter(x=>![...takenFields[me],...takenFields[opponent]].includes(x))
                                 .filter(x=>![1,3,7,9].includes(x))
                                 ; // exclude nonviable options // exclude duplicates
-
+                console.log(logicalMove);
                 let duplicate = logicalMove.filter((x,i)=>logicalMove.indexOf(x) !== i);
                 //console.log('duplicate: ' + duplicate);                                                   CL
                 //console.log('only possible move:')                                                        CL
                 //console.log(logicalMove);                                                                 CL
                 logicalMove = logicalMove.filter(x=>x!==parseInt(duplicate));
+                console.log(logicalMove);
             }
  
             if(!takenFields[me].includes(parseInt(logicalMove))) { 
@@ -158,7 +161,8 @@ export function playerAI(opponent,turn,moveNumber,takenFields,winCombinations) {
                     //console.log('what now?');                                                             CL
                     logicalMove = //winCombinations.filter((e)=> e.filter(x=>!takenFields[opponent].includes(x)).length === 2)
                                     [...possibleMoves.filter(x=>x.length===2)]
-                                                .flat()
+                                                .concat.apply([],[...possibleMoves.filter(x=>x.length===2)])
+                                                //.flat() - not supported by EDGE and IE
                                                 .filter(x=>![...takenFields[me],...takenFields[opponent]].includes(x))
                                                 .filter(x=>x % 2 !== 0)
                     nextPosition = {...nextPosition, moveTo: logicalMove, yes: true};
@@ -184,8 +188,11 @@ export function playerAI(opponent,turn,moveNumber,takenFields,winCombinations) {
                 let illogicalMoves = [2,4,6,8, ...takenFields[me], ...takenFields[opponent]].sort(); // do not move here
 
                 let logicalMoves = possibleMoves.filter(x=>x.length===3) //set the logical moves by filtering an array where the oponent has the best win options
-                                                .flat() // flatten the array, since it's a deep array, made out of two arrays
+                                                .concat.apply([],[...possibleMoves]) // flatten the array, since it's a deep array, made out of two arrays .flat() does not yet work with EDGE or IE
+                                                //.flat()
                                                 .filter(x=>!illogicalMoves.includes(x)); // then filter that array with the illogical move options
+                
+                
 
                 // take the logical move and the current position and check it against a win option
                 //if the opponent is already present on that path, forget it.
@@ -227,6 +234,7 @@ export function playerAI(opponent,turn,moveNumber,takenFields,winCombinations) {
 
             // if there are no options for win, stop the opponent from winning - if only one option exists, if more do, you lose anyway
             } else {
+                console.log('im hiding in the else ...');
                  winCombinations.map(e => {
                     if(e.filter(x=>takenFields[opponent].includes(x)).length === 2 && e.filter(x=>[...takenFields[me], ...takenFields[opponent]].includes(x)).length !== 3) {
                         cSixLogicalMoveAlternative = e.filter(x=>!takenFields[opponent].includes(x));
@@ -246,6 +254,12 @@ export function playerAI(opponent,turn,moveNumber,takenFields,winCombinations) {
                     // . X .
                     // . O .
                     // X O X
+            // Danger level:
+            // X 2 3 <--- move to 3 (best defense is a good offense) 
+            // O O X
+            // 7 X 9 <--- 7 or 9
+                    console.log('this is my move ...');
+                    //cSixLogicalMove = [1,3,5,7,9].filter(x=>![...takenFields[me],...takenFields[opponent]].includes(x));
                     cSixLogicalMove = [1,2,3,4,5,6,7,8,9].filter(x=>![...takenFields[me],...takenFields[opponent]].includes(x));
                     nextPosition = {
                         ...nextPosition,
@@ -260,7 +274,7 @@ export function playerAI(opponent,turn,moveNumber,takenFields,winCombinations) {
         break;
         case 8:
         
-        //console.log('%cCASE 8:','color: blue; font-weight: bold');                                                CL
+        console.log('%cCASE 8:','color: blue; font-weight: bold');
             // check if I can win
             checkMyWin = winCombinations.map(e=> {
                 if(e.filter(x=>[...takenFields[me]].includes(x)).length === 2 && e.filter(x=>[...takenFields[me],...takenFields[opponent]].includes(x)).length !== 3) {

@@ -43,6 +43,10 @@ const initialState = {
       text: 'Let the **tic tac toe deathmatch** begin...',
       color: 'red'
     },
+    {
+      text: `email bugs with log included to lukam @ nym.hush.com`,
+      color: 'green'
+    },
   ]
 }
 

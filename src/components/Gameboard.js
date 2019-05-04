@@ -58,11 +58,9 @@ const Gameboard = () => {
     };
     // everything with updating state.
     useEffect(()=> {
-      let countdown = '';
       let {win, reset, x, o} = gameOver(winCombinations,state.playerPositions);
-      let player = true;
-      let comp = false;
-      let updatedStats = { player: 0, comp: 0 }
+      let player, comp, countdown;
+      //let updatedStats = { player: 0, comp: 0 }
 
       if (state.player === 'x') {
           player = x;
@@ -71,41 +69,37 @@ const Gameboard = () => {
           player = o;
           comp = x;
       }
-      
       // display turns
       dispatch({type: CONSOLE_LOG, payload: { text: (state.turn) ? 'Player turn ...':'Computer turn ...', color: ''}});
       
       // if end game
       if(reset === true) {
-        if(x || o) {
-          updatedStats = {
+        let updatedStats = {
             player: (player) ? state.stats.player + 1 : state.stats.player,
             comp: (comp) ? state.stats.comp + 1 : state.stats.comp
           }
-        }
-        
-        dispatch({type: UPDATE_STATS, payload: updatedStats});
+
         if(win.length === 0) {
-          dispatch({type:CONSOLE_LOG, payload: {text: `DRAW!`, color: `red`}});
           dispatch({type: CONSOLE_LOG, payload: { text: `Player: ${updatedStats.player} Comp: ${updatedStats.comp}`,color: `green`}});
           dispatch({type: CONSOLE_LOG, payload: { text: `~~~~SCORE~~~~`,color: `green`}});
+          dispatch({type:CONSOLE_LOG, payload: {text: `DRAW!`, color: `red`}});
         } else {
+          dispatch({type: UPDATE_STATS, payload: updatedStats});
+          dispatch({type: CONSOLE_LOG, payload: { text: `Player: ${updatedStats.player} Comp: ${updatedStats.comp}`,color: `green`}});
+          dispatch({type: CONSOLE_LOG, payload: { text: `~~~~SCORE~~~~`,color: `green`}});
           dispatch({type: CONSOLE_LOG, payload: { text: `winning combo: ${win.sort()}`, color:'red'}});
           dispatch({type: CONSOLE_LOG, payload: { text: `${(player) ? 'PLAYER WINS!' : 'COMPUTER WINS'}`, color: (player) ? 'green' : 'red'}}); 
-          dispatch({type: CONSOLE_LOG, payload: { text: `Player: ${updatedStats.player} Comp: ${updatedStats.comp}`,color: `green`}});
-          dispatch({type: CONSOLE_LOG, payload: { text: `~~~~SCORE~~~~`,color: `green`}});
         }
-
+        
+        // restart game in 6,5s
         setTimeout(()=> {
-            //console.log('Baraka wins ...');
             dispatch({type: NEW_GAME });
             setMoves(1);
             setStopGame({x: false, o:false, win: [], reset:false});
-            // close modal
-            // dispatch  
           }, 6500); 
-          // open reset
           
+
+          // countdown to new game, with console logs
           let fiveSeconds = 5;
           countdown = setInterval(() => {
             if(fiveSeconds === 5) {
@@ -118,13 +112,11 @@ const Gameboard = () => {
                 text: 'Let the **tic tac toe deathmatch** begin... again.',
                 color: 'red'
               },});
-              clearInterval(countdown);
+              clearInterval(countdown); // stop counting down
             }
             fiveSeconds--;
           }, 1000);
-          //dispatch({type: CONSOLE_LOG, payload: { text: 'RESTARTING GAME IN 5s', color: 'red'}});
 
-          //console.log('win combo: ' + win);                     CL
       }
       setStopGame({x, o, win, reset});
       
