@@ -4,7 +4,7 @@ import { AppContext } from '../App';
 const Console = () => {
     const {state } = useContext(AppContext);
     const [log,setLog] = useState(state.consoleLogs);
-
+    
     useEffect(()=>{
       setLog(state.consoleLogs);
     },[state]);

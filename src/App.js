@@ -30,6 +30,7 @@ const initialState = {
   turn: true,
   player: '',
   computer: '',
+  round: 1,
   playerPositions: {
     x: [],
     o: []
@@ -39,6 +40,11 @@ const initialState = {
     comp: 0
   },
   consoleLogs: [
+    {
+      text: 'ROUND 1',
+      color: 'red',
+      show: true
+    },
     {
       text: 'Let the **tic tac toe deathmatch** begin...',
       color: 'red',
@@ -102,6 +108,7 @@ const reducer = (state,action) => {
           x: [],
           o: []
         },
+        round: state.round + 1
       }
     case UPDATE_STATS:
       return {
@@ -109,7 +116,7 @@ const reducer = (state,action) => {
         stats: action.payload
       };
     case 'reset': 
-      return {
+      return  {
         fields: [    
           {id: 1, taken: ''},
           {id: 2, taken: ''},
@@ -124,6 +131,7 @@ const reducer = (state,action) => {
         turn: true,
         player: '',
         computer: '',
+        round: 1,
         playerPositions: {
           x: [],
           o: []
@@ -134,8 +142,18 @@ const reducer = (state,action) => {
         },
         consoleLogs: [
           {
+            text: 'ROUND 1',
+            color: 'red',
+            show: true
+          },
+          {
             text: 'Let the **tic tac toe deathmatch** begin...',
             color: 'red',
+            show: true
+          },
+          {
+            text: `email bugs with log included to lukam @ nym.hush.com`,
+            color: 'green',
             show: true
           },
         ]

@@ -68,7 +68,11 @@ const Gameboard = () => {
     const handleDownload = (e) => {
       let date = new Date()
       if(state.consoleLogs && state.consoleLogs.length > 3){
-        let data = 'data:text/json;charset=utf8,' + JSON.stringify(state.consoleLogs);
+        let data = 'data:text/json;charset=utf8,' + JSON.stringify({
+                                                              player: state.player,
+                                                              rounds: state.round,
+                                                              stats: state.stats,
+                                                              logs:state.consoleLogs});
         let filename = `tictactoe-log_${date.getFullYear()}-${date.getMonth()}-${date.getDay()}_${date.getHours()}-${date.getMinutes()}-${date.getSeconds()}.json`
         e.target.setAttribute('href', data);
         e.target.setAttribute('download', filename);
@@ -124,11 +128,11 @@ const Gameboard = () => {
           let fiveSeconds = 5;
           countdown = setInterval(() => {
             if(fiveSeconds === 5) {
-              dispatch({type: CONSOLE_LOG, payload: { text: `New game starting in: ${fiveSeconds}s ...`, color: 'red', show: true}});
+              dispatch({type: CONSOLE_LOG, payload: { text: `Next round starting in: ${fiveSeconds}s ...`, color: 'red', show: true}});
             } else if (fiveSeconds < 5 && fiveSeconds > 0) {
               dispatch({type: CONSOLE_LOG, payload: { text: `${fiveSeconds}s ...`, color: 'red', show: true}});
             } else if (fiveSeconds === 0) {
-              dispatch({type: CONSOLE_LOG, payload: { text: `NEW GAME!`, color: 'green', show: true}});
+              dispatch({type: CONSOLE_LOG, payload: { text: `ROUND: ${state.round + 1}`, color: 'green', show: true}})
               dispatch({type: CONSOLE_LOG, payload: {
                 text: 'Let the **tic tac toe deathmatch** begin... again.',
                 color: 'red', 
