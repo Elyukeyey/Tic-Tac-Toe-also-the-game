@@ -29,8 +29,8 @@ const Gameboard = () => {
     }
 
     const handleClick = (e) => {
-      // if someone wins
-      if(stopGame.reset) {
+      // if someone wins or isn't player turn
+      if(stopGame.reset || !state.turn) {
         return;
       }
       // if it's a valid click (on an empty field)
@@ -42,6 +42,13 @@ const Gameboard = () => {
 
         // change to CHANGE_TURN
         dispatch({type: CHANGE_TURN});
+        dispatch({type: CONSOLE_LOG,
+                  payload:{
+                    show: false,
+                    color: '',
+                    text: `turn: ${(state.turn) ? 'player' : 'comp'},\n move: ${moves},\n `,
+                    fields: state.fields
+        }});
         // count new moves
         setMoves(moves + 1);
         
@@ -56,11 +63,25 @@ const Gameboard = () => {
       setStopGame({x: false, o:false, win: [], reset:false})
       setMoves(0);
     };
+
+    // download the log file
+    const handleDownload = (e) => {
+      let date = new Date()
+      if(state.consoleLogs && state.consoleLogs.length > 3){
+        let data = 'data:text/json;charset=utf8,' + JSON.stringify(state.consoleLogs);
+        let filename = `tictactoe-log_${date.getFullYear()}-${date.getMonth()}-${date.getDay()}_${date.getHours()}-${date.getMinutes()}-${date.getSeconds()}.json`
+        e.target.setAttribute('href', data);
+        e.target.setAttribute('download', filename);
+        //e.target.click();
+      } else {
+        e.preventDefault();
+      }
+    }
+
     // everything with updating state.
     useEffect(()=> {
       let {win, reset, x, o} = gameOver(winCombinations,state.playerPositions);
       let player, comp, countdown;
-      //let updatedStats = { player: 0, comp: 0 }
 
       if (state.player === 'x') {
           player = x;
@@ -70,7 +91,7 @@ const Gameboard = () => {
           comp = x;
       }
       // display turns
-      dispatch({type: CONSOLE_LOG, payload: { text: (state.turn) ? 'Player turn ...':'Computer turn ...', color: ''}});
+      dispatch({type: CONSOLE_LOG, payload: { text: (state.turn) ? 'Player turn ...':'Computer turn ...', color: '', show: true}});
       
       // if end game
       if(reset === true) {
@@ -80,15 +101,15 @@ const Gameboard = () => {
           }
 
         if(win.length === 0) {
-          dispatch({type: CONSOLE_LOG, payload: { text: `Player: ${updatedStats.player} Comp: ${updatedStats.comp}`,color: `green`}});
-          dispatch({type: CONSOLE_LOG, payload: { text: `~~~~SCORE~~~~`,color: `green`}});
-          dispatch({type:CONSOLE_LOG, payload: {text: `DRAW!`, color: `red`}});
+          dispatch({type: CONSOLE_LOG, payload: { text: `Player: ${updatedStats.player} Comp: ${updatedStats.comp}`,color: `green`, show: true}});
+          dispatch({type: CONSOLE_LOG, payload: { text: `~~~~SCORE~~~~`,color: `green`, show: true}});
+          dispatch({type:CONSOLE_LOG, payload: {text: `DRAW!`, color: `red`, show: true}});
         } else {
           dispatch({type: UPDATE_STATS, payload: updatedStats});
-          dispatch({type: CONSOLE_LOG, payload: { text: `Player: ${updatedStats.player} Comp: ${updatedStats.comp}`,color: `green`}});
-          dispatch({type: CONSOLE_LOG, payload: { text: `~~~~SCORE~~~~`,color: `green`}});
-          dispatch({type: CONSOLE_LOG, payload: { text: `winning combo: ${win.sort()}`, color:'red'}});
-          dispatch({type: CONSOLE_LOG, payload: { text: `${(player) ? 'PLAYER WINS!' : 'COMPUTER WINS'}`, color: (player) ? 'green' : 'red'}}); 
+          dispatch({type: CONSOLE_LOG, payload: { text: `Player: ${updatedStats.player} Comp: ${updatedStats.comp}`,color: `green`, show: true}});
+          dispatch({type: CONSOLE_LOG, payload: { text: `~~~~SCORE~~~~`,color: `green`, show: true}});
+          dispatch({type: CONSOLE_LOG, payload: { text: `winning combo: ${win.sort()}`, color:'red', show: true}});
+          dispatch({type: CONSOLE_LOG, payload: { text: `${(player) ? 'PLAYER WINS!' : 'COMPUTER WINS'}`, color: (player) ? 'green' : 'red', show: true}}); 
         }
         
         // restart game in 6,5s
@@ -103,14 +124,15 @@ const Gameboard = () => {
           let fiveSeconds = 5;
           countdown = setInterval(() => {
             if(fiveSeconds === 5) {
-              dispatch({type: CONSOLE_LOG, payload: { text: `New game starting in: ${fiveSeconds}s ...`, color: 'red'}});
+              dispatch({type: CONSOLE_LOG, payload: { text: `New game starting in: ${fiveSeconds}s ...`, color: 'red', show: true}});
             } else if (fiveSeconds < 5 && fiveSeconds > 0) {
-              dispatch({type: CONSOLE_LOG, payload: { text: `${fiveSeconds}s ...`, color: 'red'}});
+              dispatch({type: CONSOLE_LOG, payload: { text: `${fiveSeconds}s ...`, color: 'red', show: true}});
             } else if (fiveSeconds === 0) {
-              dispatch({type: CONSOLE_LOG, payload: { text: `NEW GAME!`, color: 'green'}});
+              dispatch({type: CONSOLE_LOG, payload: { text: `NEW GAME!`, color: 'green', show: true}});
               dispatch({type: CONSOLE_LOG, payload: {
                 text: 'Let the **tic tac toe deathmatch** begin... again.',
-                color: 'red'
+                color: 'red', 
+                show: true
               },});
               clearInterval(countdown); // stop counting down
             }
@@ -145,10 +167,11 @@ const Gameboard = () => {
       <div className="container">
         <main>
           <div className="game-field">
-            {state.fields.map(({id, taken}, idx)=><div key={id} id={idx} onClick={handleClick} className={`field field-${id} ${(stopGame.win.filter(x=>x===id).length>0)? 'win' : ''}`}><h1 className="field-content">{taken}</h1></div>)}
+            {state.fields.map(({id, taken}, idx)=><div key={id} id={idx} onClick={handleClick} className={`field field-${id} ${(stopGame.win.filter(x=>x===id).length>0)? 'win' : ''} ${(state.turn && taken === '') ? 'point glow' : ''}`}><h1 className="field-content">{taken}</h1></div>)}
           </div>
         </main>
-        <div className="reset"><a href="#reset" onClick={handleReset}>QUIT GAME</a></div>
+        <div className="reset margin-top-30"><a href="#reset" onClick={handleReset}>QUIT GAME</a></div>
+        <div className="reset margin-top-15"><a href="#log" onClick={handleDownload}>download log</a></div>
       </div>
       </>
     );

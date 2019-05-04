@@ -41,11 +41,13 @@ const initialState = {
   consoleLogs: [
     {
       text: 'Let the **tic tac toe deathmatch** begin...',
-      color: 'red'
+      color: 'red',
+      show: true
     },
     {
       text: `email bugs with log included to lukam @ nym.hush.com`,
-      color: 'green'
+      color: 'green',
+      show: true
     },
   ]
 }
@@ -133,7 +135,8 @@ const reducer = (state,action) => {
         consoleLogs: [
           {
             text: 'Let the **tic tac toe deathmatch** begin...',
-            color: 'red'
+            color: 'red',
+            show: true
           },
         ]
       }

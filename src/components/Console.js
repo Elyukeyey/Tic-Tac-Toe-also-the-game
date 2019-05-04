@@ -11,7 +11,7 @@ const Console = () => {
     
       return (
         <div className="console">
-            { log.map(({text, color}, i) => <p key={i} className={`console-log ${color}`}>{text}</p>)}
+            { log.map(({text, color, show}, i) => (show) ? <p key={i} className={`console-log ${color}`}>{text}</p> : null)}
         </div>
   );
 }
