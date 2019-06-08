@@ -1,11 +1,11 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { 
-        playerAI, 
         winCombinations,
         gameOver
       } from '../logic.js';
       
 import { AppContext, CONSOLE_LOG, UPDATE_POSITIONS, UPDATE_FIELDS, NEW_GAME, CHANGE_TURN, UPDATE_STATS } from '../App.js';
+import TicTacToe from '../logic/tictactoe';
 
 
 
@@ -13,32 +13,40 @@ const Gameboard = () => {
     const {state,dispatch} = useContext(AppContext);
     const [moves,setMoves] = useState(1);
     const [stopGame,setStopGame] = useState({x: false, o:false, win: [], reset:false});
+    const { fields, turn, player, computer, consoleLogs, playerPositions, round, stats } = state;
+    const compPlayer = new TicTacToe({me: computer});
 
 
-    // eslint-disable-next-line
-    const mapNewPositions = (turn,position) => {
-      let newPositions = {
-        ...state.playerPositions,
-        [turn]: [...state.playerPositions[turn], parseInt(position) +1]
-      }
+    const _mapNewPositions = (newState) => {
       // change to UPDATE_POSITIONS
+      //<Update positions>
+      let newPositions = {
+        'o': newState.map((e,i)=>{
+                        return(e==='o') ? i : null;
+                      }).filter(x=>x!==null),
+        'x': newState.map((e,i)=>{
+                        return(e==='x') ? i : null;
+                      }).filter(x=>x!==null)
+      };
       dispatch({type: UPDATE_POSITIONS, payload: newPositions});
-      state.fields[position].taken = turn;
-      // change to UPDATE_FIELDS
-      dispatch({type: UPDATE_FIELDS, payload: state.fields});
+      //</Update positions>
+      //<Update fields>
+      dispatch({type: UPDATE_FIELDS, payload: newState});
+      //</Update fields>
     }
 
     const handleClick = (e) => {
       // if someone wins or isn't player turn
-      if(stopGame.reset || !state.turn) {
+      let newState = [...fields];
+      if(stopGame.reset || !turn) {
         return;
       }
       // if it's a valid click (on an empty field)
-      if (state.fields[e.target.id].taken === '') {
-        let turn = (state.turn) ? state.player : (state.player === 'x') ? 'o' : 'x';
+      if (state.fields[e.target.id] === '') {
+        newState[e.target.id] = (turn) ? state.player : (player === 'x') ? 'o' : 'x';
 
         // map new player positions
-        mapNewPositions(turn,e.target.id);
+        _mapNewPositions(newState);
 
         // change to CHANGE_TURN
         dispatch({type: CHANGE_TURN});
@@ -46,8 +54,8 @@ const Gameboard = () => {
                   payload:{
                     show: false,
                     color: '',
-                    text: `turn: ${(state.turn) ? 'player' : 'comp'},\n move: ${moves},\n `,
-                    fields: state.fields
+                    text: `turn: ${(turn) ? 'player' : 'comp'},\n move: ${moves},\n `,
+                    fields: fields
         }});
         // count new moves
         setMoves(moves + 1);
@@ -69,10 +77,10 @@ const Gameboard = () => {
       let date = new Date()
       if(state.consoleLogs && state.consoleLogs.length > 3){
         let data = 'data:text/json;charset=utf8,' + JSON.stringify({
-                                                              player: state.player,
-                                                              rounds: state.round,
-                                                              stats: state.stats,
-                                                              logs:state.consoleLogs});
+                                                              player: player,
+                                                              rounds: round,
+                                                              stats: stats,
+                                                              logs:consoleLogs});
         let filename = `tictactoe-log_${date.getFullYear()}-${date.getMonth()}-${date.getDay()}_${date.getHours()}-${date.getMinutes()}-${date.getSeconds()}.json`
         e.target.setAttribute('href', data);
         e.target.setAttribute('download', filename);
@@ -84,7 +92,7 @@ const Gameboard = () => {
 
     // everything with updating state.
     useEffect(()=> {
-      let {win, reset, x, o} = gameOver(winCombinations,state.playerPositions);
+      let {win, reset, x, o} = gameOver(winCombinations,playerPositions);
       let player, comp, countdown;
 
       if (state.player === 'x') {
@@ -148,22 +156,21 @@ const Gameboard = () => {
       
       // Computer moves
       if (moves !== 0){
-        let moveAI = {yes: false}
-        moveAI = playerAI(state.player,state.turn,moves,state.playerPositions,winCombinations);
         // make a move
-        if (moveAI) { 
-          setTimeout(()=> { // delay for about a second.
-            // map new player positions
-            mapNewPositions(moveAI.turn, parseInt(moveAI.moveTo)-1); 
-            // change to CHANGE_TURN
+        if (!turn) {
+          compPlayer.move(state.fields)
+          .then(({newState})=>{ 
+            _mapNewPositions(newState);
             dispatch({type: CHANGE_TURN});
-            // set moves
             setMoves(moves + 1);
-          },900);
+          })
+          .catch(err=>console.error(err));
         }
+        
+        console.log(compPlayer.History);
       }
     // eslint-disable-next-line
-    },[moves]);
+    },[turn]);
 
     return (
       <>
@@ -171,7 +178,12 @@ const Gameboard = () => {
       <div className="container">
         <main>
           <div className="game-field">
-            {state.fields.map(({id, taken}, idx)=><div key={id} id={idx} onClick={handleClick} className={`field field-${id} ${(stopGame.win.filter(x=>x===id).length>0)? 'win' : ''} ${(state.turn && taken === '') ? 'point glow' : ''}`}><h1 className="field-content">{taken}</h1></div>)}
+          {state.fields.map((field, idx)=>{
+            return <div key={idx} id={idx} onClick={handleClick} className={`field field-${idx+1} ${(stopGame.win.filter(x=>x===idx).length>0)? 'win' : ''} ${(state.turn && field === '') ? 'point glow' : ''}`}>
+                      <h1 className="field-content">{field}</h1>
+                    </div>
+            })}
+            {/*state.fields.map(({id, taken}, idx)=><div key={id} id={idx} onClick={handleClick} className={`field field-${id} ${(stopGame.win.filter(x=>x===id).length>0)? 'win' : ''} ${(state.turn && taken === '') ? 'point glow' : ''}`}><h1 className="field-content">{taken}</h1></div>)*/}
           </div>
         </main>
         <div className="reset margin-top-30"><a href="#reset" onClick={handleReset}>QUIT GAME</a></div>

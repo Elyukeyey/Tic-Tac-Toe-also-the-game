@@ -17,15 +17,15 @@ export const UPDATE_STATS = 'UPDATE_STATS';
 // initState
 const initialState = {
   fields: [    
-    {id: 1, taken: ''},
-    {id: 2, taken: ''},
-    {id: 3, taken: ''},
-    {id: 4, taken: ''},
-    {id: 5, taken: ''},
-    {id: 6, taken: ''},
-    {id: 7, taken: ''},
-    {id: 8, taken: ''},
-    {id: 9, taken: ''}
+    '',
+    '',
+    '',
+    '',
+    '',
+    '',
+    '',
+    '',
+    ''
   ],
   turn: true,
   player: '',
@@ -93,15 +93,15 @@ const reducer = (state,action) => {
       return {
         ...state,
         fields: [    
-          {id: 1, taken: ''},
-          {id: 2, taken: ''},
-          {id: 3, taken: ''},
-          {id: 4, taken: ''},
-          {id: 5, taken: ''},
-          {id: 6, taken: ''},
-          {id: 7, taken: ''},
-          {id: 8, taken: ''},
-          {id: 9, taken: ''}
+          '',
+          '',
+          '',
+          '',
+          '',
+          '',
+          '',
+          '',
+          ''
         ],
         turn: true,
         playerPositions: {
@@ -118,15 +118,15 @@ const reducer = (state,action) => {
     case 'reset': 
       return  {
         fields: [    
-          {id: 1, taken: ''},
-          {id: 2, taken: ''},
-          {id: 3, taken: ''},
-          {id: 4, taken: ''},
-          {id: 5, taken: ''},
-          {id: 6, taken: ''},
-          {id: 7, taken: ''},
-          {id: 8, taken: ''},
-          {id: 9, taken: ''}
+          '',
+          '',
+          '',
+          '',
+          '',
+          '',
+          '',
+          '',
+          ''
         ],
         turn: true,
         player: '',

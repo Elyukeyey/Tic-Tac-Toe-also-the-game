@@ -17,14 +17,14 @@ export const startPosition = [
   ];*/
 
 export const winCombinations = [
-    [1,2,3],
-    [4,5,6],
-    [7,8,9],
+    [0,1,2],
+    [3,4,5],
+    [6,7,8],
+    [0,3,6],
     [1,4,7],
     [2,5,8],
-    [3,6,9],
-    [1,5,9],
-    [3,5,7]
+    [0,4,8],
+    [2,4,6]
 ];
 
 
@@ -63,7 +63,7 @@ export const gameOver = (winCombinations, players) => {
     // make a ref with id and programatically click it
 }*/
 
-export function playerAI(opponent,turn,moveNumber,takenFields,winCombinations) {
+/*export function playerAI(opponent,turn,moveNumber,takenFields,winCombinations) {
     // playerAI function called after human player move
     // so no need to check for move.
     let gameOverCheck = gameOver(winCombinations,takenFields);
@@ -334,4 +334,4 @@ export function playerAI(opponent,turn,moveNumber,takenFields,winCombinations) {
         //null
     }
     return 
-}
+}*/
